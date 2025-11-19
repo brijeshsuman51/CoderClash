@@ -35,7 +35,7 @@ const InitializeConnection = async () => {
             console.log("Server is running at Port Number:"+process.env.PORT)
         })
     } catch (error) {
-        console.error("Error:",error)
+        console.error("Error:",error.message)
     }
 }
 

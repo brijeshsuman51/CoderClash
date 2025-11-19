@@ -1,27 +1,31 @@
-const { problemStatus } = require("../utils/problemvalid")
+const  problemStatus  = require("../utils/problemstatus")
 const Problem = require("../models/problem")
 const Submit = require("../models/submit")
 const User = require("../models/user")
 const Video = require("../models/video")
 
+// Create Problem 
+
 const createProblem = async (req,res) => {
-    // console.log("Hello")
     try {
-        problemStatus(req.body)
+        await problemStatus(req.body)
         const problemInfo = await Problem.create({
             ...req.body,
             problemCreator : req.result._id,
-        })          
-
-        res.send("Problem Created Successfully")
+        })
+        res.status(201).json({ message: "Problem Created Successfully", problem: problemInfo });
+        // res.send("Problem Created Successfully")
     } catch (error) {
             // console.log("Hello1")
 
-        console.error("Error:",error)
+        // console.error("Error:",error)
+        console.error("Error creating problem:", error.message);
+        res.status(400).json({ message: "Failed to create problem.", error: error.message });
         // res.send(error)
     }
 }
 
+// Update Problem 
 
 const updateProblem = async (req,res) => {
     try {
@@ -47,6 +51,8 @@ const updateProblem = async (req,res) => {
     
 }
 
+// Delete Problem 
+
 const deleteProblem = async (req,res) => {
     
     const { id } = req.params;
@@ -66,6 +72,8 @@ const deleteProblem = async (req,res) => {
         res.send("Error:",error)
     }
 }
+
+// Problem Fetch By User
 
 const getProblemByUsers = async (req,res) => {
     const {id} = req.params
@@ -98,6 +106,7 @@ const getProblemByUsers = async (req,res) => {
     
 }
 
+// All Problem Fetch 
 const getAllProblem = async (req,res) => {
     try {
         const getProblem = await Problem.find({}).select('_id title difficulty tags')
@@ -111,6 +120,8 @@ const getAllProblem = async (req,res) => {
     }
 }
 
+// Solved Problems By User 
+
 const solvedAllProblemByUser = async (req,res) => {
     try {
         const userId = req.result._id;
@@ -123,6 +134,8 @@ const solvedAllProblemByUser = async (req,res) => {
         res.send("Error:",error)
     }
 }
+
+// Submissions 
 
 const submittedProblem = async (req,res) => {
     try {

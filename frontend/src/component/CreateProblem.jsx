@@ -1,16 +1,9 @@
-
-
 import { zodResolver } from "@hookform/resolvers/zod"
-// import { languages } from "monaco-editor"
+import { languages } from "monaco-editor"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 import { z } from 'zod'
 import axiosClient from "../utils/axiosClient"
-
-
-
-
-
 
 
 const problemSchema = z.object({
@@ -92,7 +85,7 @@ function CreateProblem(){
     const onSubmit = async (data)=>{
         console.log(data)
         try {
-            await axiosClient.post("/problem/create",data)
+            await axiosClient.post('/problem/create',data)
             alert("Problem created Successfully!")
             navigate("/")
         } catch (error) {

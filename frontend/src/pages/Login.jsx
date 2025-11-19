@@ -9,7 +9,12 @@ import { useEffect, useState } from 'react';
 
 const loginSchema = z.object({
   emailId: z.string().email("Invalid Email"),
-  password: z.string().min(8, "Password is too weak") 
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
 });
 
 function Login() {
@@ -17,11 +22,12 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
+  const [apiError, setApiError] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(loginSchema) }); // Using renamed schema
+  } = useForm({ resolver: zodResolver(loginSchema) }); 
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -29,20 +35,37 @@ function Login() {
     }
   }, [isAuthenticated, navigate]);
 
+  useEffect(() => {
+    if (error) {
+      setApiError(error);
+    } else {
+      setApiError(null);
+    }
+  }, [error]);
+
   const onSubmit = (data) => {
+    setApiError(null); 
     dispatch(loginUser(data));
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200"> {/* Added bg for contrast */}
+    <div className="min-h-screen flex items-center justify-center p-4 bg-base-200">
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title justify-center text-3xl mb-6">CoderClash</h2> {/* Added mb-6 */}
+          <h2 className="card-title justify-center text-3xl mb-6">CoderClash</h2>
 
           
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-control"> {/* Removed mt-4 from first form-control for tighter spacing to title or global error */}
-              <label className="label"> {/* Removed mb-1, default spacing should be fine */}
+            {apiError && (
+              <div className="alert alert-error mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{apiError}</span>
+              </div>
+            )}
+            <div className="form-control"> 
+              <label className="label"> 
                 <span className="label-text">Email</span>
               </label>
               <input
@@ -93,7 +116,7 @@ function Login() {
             <div className="form-control mt-8 flex justify-center">
               <button
                 type="submit"
-                className={`btn btn-primary ${loading ? 'loading btn-disabled' : ''}`} // Added btn-disabled for better UX with loading
+                className={`btn btn-primary ${loading ? 'loading btn-disabled' : ''}`}
                 disabled={loading}
               >
                 {loading ? (
@@ -107,7 +130,7 @@ function Login() {
           </form>
           <div className="text-center mt-6">
             <span className="text-sm">
-              Don't have an account?{' '} {/* Adjusted text slightly */}
+              Don't have an account?{' '}
               <NavLink to="/signup" className="link link-primary">
                 Sign Up
               </NavLink>

@@ -3,6 +3,8 @@ const User = require('../models/user')
 const Submit = require('../models/submit')
 const {getLanguageById,submitBatch,submitToken} = require('../utils/problemvalid')
 
+// Submit Code 
+
 const submitCode = async (req,res) => {
     try {
         const userId = req.result._id;
@@ -94,6 +96,8 @@ const submitCode = async (req,res) => {
         res.send("Error:"+error)
     }
 }
+
+// Run Code
 
 const runCode = async (req,res) => {
     try {

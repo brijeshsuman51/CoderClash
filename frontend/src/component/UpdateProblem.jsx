@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from 'zod';
 import axiosClient from "../utils/axiosClient";
 import { logoutUser } from '../authSlice';
 
-// Reuse the same schema from CreateProblem
+
 const problemSchema = z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
@@ -81,8 +81,8 @@ function UpdateProblem() {
             description: '',
             difficulty: 'easy',
             tags: 'array',
-            visibleTestCases: [{ input: 'Sample input', output: 'Sample output', explanation: 'Sample explanation' }],
-            hiddenTestCases: [{ input: 'Hidden input', output: 'Hidden output' }],
+            visibleTestCases: [{ input: '', output: '', explanation: '' }],
+            hiddenTestCases: [{ input: '', output: '' }],
             startCode: defaultCodeTemplates.startCode,
             referenceSolution: defaultCodeTemplates.referenceSolution
         }
@@ -91,7 +91,8 @@ function UpdateProblem() {
     const {
         fields: visibleFields,
         append: appendVisible,
-        remove: removeVisible
+        remove: removeVisible,
+        replace: replaceVisible
     } = useFieldArray({
         control,
         name: 'visibleTestCases'
@@ -100,7 +101,8 @@ function UpdateProblem() {
     const {
         fields: hiddenFields,
         append: appendHidden,
-        remove: removeHidden
+        remove: removeHidden,
+        replace: replaceHidden
     } = useFieldArray({
         control,
         name: 'hiddenTestCases'
@@ -129,22 +131,31 @@ function UpdateProblem() {
                     // console.log(data)
                     setSelectedProblem(data);
                     
-                    // Set language values explicitly
+                    const visibleTestCases = Array.isArray(data?.visibleTestCases) && data.visibleTestCases.length > 0
+                        ? data.visibleTestCases
+                        : [{ input: '', output: '', explanation: '' }];
+                    
+                    const hiddenTestCases = Array.isArray(data?.hiddenTestCases) && data.hiddenTestCases.length > 0
+                        ? data.hiddenTestCases
+                        : [{ input: '', output: '' }];
+                    
+
                     const formattedData = {
                         title: data?.title || '',
                         description: data?.description || '',
                         difficulty: data?.difficulty || 'easy',
                         tags: data?.tags || 'array',
-                        visibleTestCases: data?.visibleTestCases,
-                        hiddenTestCases: data?.hiddenTestCases, 
+                        visibleTestCases: visibleTestCases,
+                        hiddenTestCases: hiddenTestCases, 
                         startCode: data?.startCode || defaultCodeTemplates.startCode,
                         referenceSolution: data?.referenceSolution || defaultCodeTemplates.referenceSolution
                     };
                     
-                    // Reset form with fetched data
                     reset(formattedData);
                     
-                    // Manually set language values to ensure they're correct
+                    replaceVisible(visibleTestCases);
+                    replaceHidden(hiddenTestCases);
+                    
                     languages.forEach((lang, index) => {
                         setValue(`startCode.${index}.language`, lang);
                         setValue(`referenceSolution.${index}.language`, lang);
@@ -161,7 +172,7 @@ function UpdateProblem() {
 
             fetchProblemDetails();
         }
-    }, [problemId, reset, navigate]);
+    }, [problemId, reset, navigate, replaceVisible, replaceHidden, setValue]);
 
     const handleLogout = () => {
         dispatch(logoutUser());
@@ -199,7 +210,6 @@ function UpdateProblem() {
         }
     };
 
-    // If no problem is selected, show the list of problems
     if (!problemId) {
         return (
             <div className="min-h-screen bg-base-200">
@@ -281,7 +291,6 @@ function UpdateProblem() {
         );
     }
 
-    // If a problem is selected, show the update form
     if (loading) {
         return (
             <div className="min-h-screen bg-base-200 flex items-center justify-center">
@@ -320,7 +329,6 @@ function UpdateProblem() {
                                 {errors.startCode && <li>Start Code: {errors.startCode.message}</li>}
                                 {errors.referenceSolution && <li>Reference Solution: {errors.referenceSolution.message}</li>}
                                 
-                                {/* Show language-specific errors */}
                                 {errors.startCode && errors.startCode[0]?.language && (
                                     <li>Start Code Language: {errors.startCode[0].language.message}</li>
                                 )}

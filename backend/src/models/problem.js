@@ -65,7 +65,7 @@ const problemSchema = new Schema({
         {
             language:{
                 type:String,
-                lowercase:true,
+                // lowercase:true,
                 required:true
             },
             completeCode:{

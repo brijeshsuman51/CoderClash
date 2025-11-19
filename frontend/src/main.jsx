@@ -6,6 +6,19 @@ import { BrowserRouter } from 'react-router'
 import {store} from './stores/store.js'
 import { Provider } from "react-redux"
 
+// Initialize theme from localStorage 
+
+const savedTheme = (() => {
+	try {
+		const t = localStorage.getItem('theme')
+		return t === 'dark' ? 'dark' : 'light'
+	} catch {
+		return 'dark'
+	}
+})
+if (typeof document !== 'undefined') {
+	document.documentElement.setAttribute('data-theme', savedTheme)
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

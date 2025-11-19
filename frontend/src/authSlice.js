@@ -8,7 +8,23 @@ export const registerUser = createAsyncThunk(
     const response =  await axiosClient.post('/user/register', userData);
     return response.data.user;
     } catch (error) {
-      return rejectWithValue(error);
+      let errorMessage = 'Something went wrong';
+      
+      if (error.response?.data) {
+        errorMessage = error.response.data;
+        // Extract message from strings like "Error: Weak Password" or "Err2or: Invalid Password"
+        if (typeof errorMessage === 'string') {
+          if (errorMessage.includes('Error:')) {
+            errorMessage = errorMessage.split('Error:')[1].trim();
+          } else if (errorMessage.includes('Error:')) {
+            errorMessage = errorMessage.split('Error:')[1].trim();
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      return rejectWithValue({ message: errorMessage });
     }
   }
 );
@@ -21,7 +37,24 @@ export const loginUser = createAsyncThunk(
       const response = await axiosClient.post('/user/login', credentials);
       return response.data.user;
     } catch (error) {
-      return rejectWithValue(error);
+      // Backend sends errors as plain strings like "Error: Weak Password" or "Error: Invalid Password"
+      let errorMessage = 'Something went wrong';
+      
+      if (error.response?.data) {
+        errorMessage = error.response.data;
+        // Extract message from strings like "Error: Weak Password" or "Error: Invalid Password"
+        if (typeof errorMessage === 'string') {
+          if (errorMessage.includes('Error:')) {
+            errorMessage = errorMessage.split('Error:')[1].trim();
+          } else if (errorMessage.includes('Error:')) {
+            errorMessage = errorMessage.split('Error:')[1].trim();
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      return rejectWithValue({ message: errorMessage });
     }
   }
 );
@@ -34,7 +67,7 @@ export const checkAuth = createAsyncThunk(
       return data?.user;
     } catch (error) {
       if (error.response?.status === 401) {
-        return rejectWithValue(null); // Special case for no session
+        return rejectWithValue(null);
       }
       return rejectWithValue(error);
     }

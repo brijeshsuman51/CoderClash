@@ -1,52 +1,53 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
-import axiosClient from "../utils/axiosClient";
+import { NavLink } from "react-router";
 import { logoutUser } from '../authSlice';
+import { fetchAllProblems, fetchSolvedProblems, clearProblems } from '../problemsSlice';
 
 function HomePage() {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
-    const [problems, setProblems] = useState([]);
-    const [solvedProblems, setSolvedProblems] = useState([]);
+    const { problems, solvedProblems, loading, solvedLoading } = useSelector((state) => state.problems);
+	const [theme, setTheme] = useState(() => {
+		if (typeof document !== 'undefined') {
+			return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+		}
+		return 'dark'
+	});
     const [filters, setFilters] = useState({
         difficulty: 'all',
         tag: 'all',
         status: 'all'
     });
+
+	const getInitials = (name) => {
+		if (!name || typeof name !== 'string') return '?'
+		const trimmed = name.trim()
+		if (!trimmed) return '?'
+		return trimmed[0].toUpperCase()
+	}
+
+	const toggleTheme = () => {
+		const next = theme === 'dark' ? 'light' : 'dark'
+		setTheme(next)
+		try {
+			localStorage.setItem('theme', next)
+		} catch {}
+		if (typeof document !== 'undefined') {
+			document.documentElement.setAttribute('data-theme', next)
+		}
+	}
     useEffect(() => {
-        const fetchProblems = async () => {
-            try {
-                const { data } = await axiosClient.get('/problem/getAllProblem');
-                setProblems( data );
-            } catch (error) {
-                console.error("Error fetching Problems:", error);
-                setProblems([]);
-            }
-        };
+        dispatch(fetchAllProblems());
 
-        const fetchSolvedProblems = async () => {
-            try {
-                const { data } = await axiosClient.get("/problem/problemSolvedByUser");
-                setSolvedProblems( data);
-            } catch (error) {
-                console.error("Error fetching solved problems:", error);
-                setSolvedProblems([]);
-            }
-        };
-
-         if (user) {
-            fetchProblems();
-            fetchSolvedProblems();
-        } else {
-            setProblems([]);
-            setSolvedProblems([]);
+        if (user) {
+            dispatch(fetchSolvedProblems());
         }
-    }, [user]);
+    }, [user, dispatch]);
 
     const handleLogout = () => {
         dispatch(logoutUser());
-        setSolvedProblems([]);
+        dispatch(clearProblems());
     };
 
     const filterProblems = (Array.isArray(problems) ? problems : []).filter(problem => {
@@ -76,30 +77,70 @@ function HomePage() {
                     <NavLink to="/" className="btn btn-ghost text-xl">CoderClash</NavLink>
                 </div>
 
-                <div className="flex-none gap-4">
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} className="btn btn-ghost">
-                            {user?.firstName}
-                        </div>
-                        <ul className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                            <li><button onClick={handleLogout}>Logout</button></li>
-                            {user?.role === 'admin' && <li><NavLink to="/admin">Admin</NavLink></li>}
-                        </ul>
-                    </div>
-                </div>
+				<div className="flex-none flex items-center gap-4">
+					<button
+						type="button"
+						aria-label="Toggle theme"
+						className="btn btn-ghost btn-circle"
+						onClick={toggleTheme}
+						title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+					>
+						{theme === 'dark' ? (
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                          </svg>
+						) : (
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                          </svg>
+						)}
+					</button>
+
+					{user ? (
+						<div className="dropdown dropdown-end">
+							<div tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
+								<div className="bg-primary text-primary-content rounded-full w-10 h-10 pt-1 flex items-center justify-center">
+									<span className="text-xl">{getInitials(user?.firstName)}</span>
+								</div>
+							</div>
+							<ul className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+								<li className="menu-title px-2 pt-2 pb-0">{user?.firstName}</li>
+								<li><NavLink to="/profile">Profile</NavLink></li>
+								{user?.role === 'admin' && <li><NavLink to="/admin">Admin</NavLink></li>}
+								<li><button onClick={handleLogout}>Logout</button></li>
+							</ul>
+						</div>
+					) : (
+						// <div className="flex gap-2">
+                        <>
+							<NavLink to="/login" className="btn btn-primary">Login</NavLink>
+							<NavLink to="/signup" className="btn btn-primary">Sign Up</NavLink>
+                            </>
+						// </div>
+					)}
+				</div>
             </nav>
 
             <div className="container mx-auto p-4">
                 <div className="flex flex-wrap gap-4 mb-6">
-                    {/* Filter dropdowns remain the same */}
-                    <select
-                        className="select select-bordered"
-                        value={filters.status}
-                        onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                    >
-                        <option value="all">All Problems</option>
-                        <option value="solved">Solved Problems</option>
-                    </select>
+                    {user && (
+                        <select
+                            className="select select-bordered"
+                            value={filters.status}
+                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                        >
+                            <option value="all">All Problems</option>
+                            <option value="solved">Solved Problems</option>
+                        </select>
+                    )}
 
                     <select
                         className="select select-bordered"
@@ -121,14 +162,13 @@ function HomePage() {
                         <option value="array">Array</option>
                         <option value="linkedList">Linked List</option>
                         <option value="graph">Graph</option>
-                        {/* <option value="dp">Dp</option> */}
+                        <option value="dp">Dp</option>
                     </select>
                 </div>
 
                 <div className="grid gap-4">
-                    {/* ✅ Safe mapping with optional chaining */}
                     {filterProblems.map(problem => (
-                        <div key={problem?._id} className="card bg-base-100 shadow-xl">
+                        <div key={problem?._id} className="card bg-base-100 shadow-xl transform hover:-translate-y-2 cursor-pointer">
                             <div className="card-body">
                                 <div className="flex items-center justify-between">
                                     <h2 className="card-title">

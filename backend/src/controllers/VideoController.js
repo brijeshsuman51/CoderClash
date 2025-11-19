@@ -8,6 +8,8 @@ cloudinary.config({
     api_secret:process.env.CLOUDINARY_SECRET
 })
 
+// Create Video Solution 
+
 const createVideo = async (req,res) => {
     try {
         const {id} = req.params;
@@ -44,6 +46,8 @@ const createVideo = async (req,res) => {
         res.json({error:'Failed to generate upload credentials'})
     }
 }
+
+// Save Video in Cloudinary 
 
 const saveVideo = async (req,res) => {
     try {
@@ -100,6 +104,8 @@ const saveVideo = async (req,res) => {
         res.json({error:'Failed to save the video solution'})
     }
 }
+
+// Delete Video From Cloudinary and Problem 
 
 const deleteVideo = async (req,res) => {
     try {

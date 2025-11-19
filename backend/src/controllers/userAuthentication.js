@@ -4,6 +4,8 @@ const validate = require('../utils/validator')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 
+// Register the user
+
 const Register = async (req,res)=>{
     
     try{
@@ -14,7 +16,6 @@ const Register = async (req,res)=>{
 
       req.body.password = await bcrypt.hash(password, 10);
       req.body.role = 'user'
-    //
     
     const user =  await User.create(req.body);
     const token =  jwt.sign({_id:user._id , emailId:emailId, role:'user'},process.env.JWT_KEY,{expiresIn: 60*60});
@@ -36,6 +37,7 @@ const Register = async (req,res)=>{
     }
 }
 
+// Login User
 const Login = async (req,res)=>{
     
     try {
@@ -48,10 +50,13 @@ const Login = async (req,res)=>{
 
         const user = await User.findOne({emailId})
 
+        if(!user)
+            throw new Error("Invalid Username and Password")
+
         const matchpass = await bcrypt.compare(password,user.password)
         
         if(!matchpass)
-            throw new Error("Invalid Password")
+            throw new Error("Invalid Username and Password")
 
         const token = jwt.sign({_id:user._id,emailId:user.emailId, role:user.role},process.env.JWT_KEY,{expiresIn:60*60})
         const reply = {
@@ -67,10 +72,11 @@ const Login = async (req,res)=>{
             message:"Login Successfully"
         })
     } catch (error) {
-        res.send("Err2or:",error)
+        res.status(400).send("Err2or: " + error.message)
     }
 }
 
+// Logout the User
 const Logout = async (req,res) => {
     try {
         const {token} = req.cookies;
@@ -86,28 +92,29 @@ const Logout = async (req,res) => {
     }
 }
 
-const adminRegister = async (req,res) => {
 
-    try {
-    validate(req.body)
+// const adminRegister = async (req,res) => {
 
-    const {firstName,password,emailId} = req.body
+//     try {
+//     validate(req.body)
 
-    req.body.password = await bcrypt.hash(password,10)
+//     const {firstName,password,emailId} = req.body
 
-    const user = await User.create(req.body)
-    const token = jwt.sign({_id:user._id,emailId:user.emailId,role:user.role},process.env.JWT_KEY,{expiresIn:60*60})
-    res.cookie('token',token,{maxAge:60*60*1000})
-    res.send("Admin Registered Successfully")
+//     req.body.password = await bcrypt.hash(password,10)
 
-
-    } catch (error) {
-        res.send('Err4or:'+error)
-    }
-
-}
+//     const user = await User.create(req.body)
+//     const token = jwt.sign({_id:user._id,emailId:user.emailId,role:user.role},process.env.JWT_KEY,{expiresIn:60*60})
+//     res.cookie('token',token,{maxAge:60*60*1000})
+//     res.send("Admin Registered Successfully")
 
 
+//     } catch (error) {
+//         res.send('Err4or:'+error)
+//     }
+
+// }
+
+// Delete Profile
 const deleteProfile = async (req,res) => {
     try {
         const userId = req.result._id;
@@ -120,6 +127,7 @@ const deleteProfile = async (req,res) => {
     }
 }
 
+// User Presence 
 const checkUser = (req,res) => {
     
     const reply = {
@@ -134,4 +142,60 @@ const checkUser = (req,res) => {
         message:"Valid User"
     })
 }
-module.exports = {Register,Login,Logout,adminRegister,deleteProfile,checkUser}
+
+// User Profile 
+const getUserProfile = async (req,res) => {
+    try {
+        const userId = req.result._id;
+        const user = await User.findById(userId).populate({
+            path:'problemSolved',
+            select:'_id title difficulty tags'
+        }).select('-password')
+        
+        if(!user){
+            return res.status(404).send("User not found")
+        }
+
+        res.json({
+            user:user,
+            totalSolved: user.problemSolved ? user.problemSolved.length : 0
+        })
+    } catch (error) {
+        res.status(400).send("Error: " + error.message)
+    }
+}
+
+
+// UserProfile Update
+
+const updateUserProfile = async (req,res) => {
+    try {
+        const userId = req.result._id;
+        const { firstName, lastName, age } = req.body;
+
+        // Only allow updating firstName, lastName, and age
+        const updateData = {};
+        if (firstName !== undefined) updateData.firstName = firstName;
+        if (lastName !== undefined) updateData.lastName = lastName;
+        if (age !== undefined) updateData.age = age;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true, runValidators: true }
+        ).select('-password')
+
+        if(!user){
+            return res.status(404).send("User not found")
+        }
+
+        res.json({
+            user:user,
+            message:"Profile updated successfully"
+        })
+    } catch (error) {
+        res.status(400).send("Error: " + error.message)
+    }
+}
+
+module.exports = {Register,Login,Logout,deleteProfile,checkUser,getUserProfile,updateUserProfile}

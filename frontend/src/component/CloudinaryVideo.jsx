@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {useParams} from 'react-router'
+import {useNavigate, useParams} from 'react-router'
 import {useForm} from 'react-hook-form'
 import axiosClient from '../utils/axiosClient'
 import axios from "axios";
@@ -7,6 +7,7 @@ import axios from "axios";
 
 function CloudinaryUploadVideo(){
     const {problemId} = useParams();
+    const navigate = useNavigate();
     const [uploading,setUploading] = useState(false)
     const [uploadProgress,setUploadProgress] = useState(0)
     const [uploadedVideo,setUploadedVideo] = useState(null)
@@ -66,7 +67,7 @@ function CloudinaryUploadVideo(){
             setUploadedVideo(metaData.data.videoSolution)
             reset()
 
-
+            navigate('/');
         } catch (error) {
             console.error("Upload Error:",error)
             setError('root',{
@@ -174,6 +175,7 @@ function CloudinaryUploadVideo(){
                                     <h3 className="font-mono">Uploaded Successfull</h3>
                                     <p className="text-sm">Duration: {formatDuration(uploadedVideo.duration)}</p>
                                     <p className="text-sm">Uploaded: {new Date(uploadedVideo.uploadedAt).toLocaleString()}</p>
+                                    {/* <p className="text-sm">Redirecting you to the homepage...</p> */}
                                 </div>
                             </div>
                         )}

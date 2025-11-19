@@ -9,9 +9,10 @@ problemRouter.post("/create",adminMiddleware,createProblem);
 problemRouter.put("/update/:id",adminMiddleware,updateProblem)
 problemRouter.delete("/delete/:id",adminMiddleware,deleteProblem)
 
-
-problemRouter.get("/problemById/:id",userMiddleware,getProblemByUsers)
-problemRouter.get("/getAllProblem",userMiddleware,getAllProblem)
+// Allow viewing problems without authentication
+problemRouter.get("/problemById/:id",getProblemByUsers)
+problemRouter.get("/getAllProblem",getAllProblem)
+// Solved problems require authentication
 problemRouter.get("/problemSolvedByUser",userMiddleware,solvedAllProblemByUser)
 
 problemRouter.get("/totalProblemSubmitted/:id",userMiddleware,submittedProblem)

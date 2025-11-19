@@ -9,5 +9,4 @@ videoRouter.post('/save',adminMiddleware,saveVideo)
 videoRouter.delete('/delete/:id',adminMiddleware,deleteVideo)
 
 
-
 module.exports = videoRouter

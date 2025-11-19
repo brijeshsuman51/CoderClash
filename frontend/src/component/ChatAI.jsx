@@ -8,8 +8,8 @@ import axiosClient from "../utils/axiosClient";
 
 function ChatAi({problem}){
     const [messages,setMessages]= useState([
-        {role:'model',parts:[{text:'hi'}]},
-        {role:'user',parts:[{text:"hello"}]}
+        {role:'model',parts:[{text:'Tell me! How can i help you'}]},
+        {role:'user',parts:[{text:""}]}
     ])
 
     const {register,handleSubmit,reset,formState:{ errors }} = useForm()
