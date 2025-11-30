@@ -257,7 +257,7 @@ const ProblemPage = ()=>{
 
                             {activeLeftTab === 'editorial' && (
                                 <div className="prose max-w-none">
-                                    <h2 className="text-xl font-bold mb-4">Editorial</h2>
+                                    <h2 className="text-xl font-bold mb-2 pl-2 pt-2">Editorial</h2>
                                     <div className="whitespace-pre-wrap text-sm leading-relaxed">
                                         <Editorial secureUrl={problem.secureUrl} thumbnailUrl={problem.thumbnailUrl} duration={problem.duration}/>
                                     </div>
@@ -266,7 +266,7 @@ const ProblemPage = ()=>{
 
                             {activeLeftTab === 'solutions' && (
                                 <div>
-                                    <h2 className="text-xl font-bold mb-4">Solutions</h2>
+                                    <h2 className="text-xl font-bold mb-4 pl-4 pt-2">Solutions</h2>
                                     <div className="space-y-6">
                                         {problem.referenceSolution?.map((solution,index)=>(
                                             <div key={index} className="border border-base-300 rounded-lg">
@@ -286,7 +286,7 @@ const ProblemPage = ()=>{
 
                             {activeLeftTab === 'submissions' && (
                                 <div>
-                                    <h2 className="text-xl font-bold mb-4">My Submissions</h2>
+                                    <h2 className="text-xl font-bold mb-4 pl-4 pt-2">My Submissions</h2>
                                     <div className="text-gray-500">
                                         <SubmissionHistory problemId={problemId}/>
                                     </div>
@@ -295,7 +295,7 @@ const ProblemPage = ()=>{
 
                             {activeLeftTab === 'ChatAI' && (
                                 <div className="prose max-w-none">
-                                    <h2 className="text-xl font-bold mb-4">CHAT WITH AI</h2>
+                                    <h2 className="text-xl font-bold mb-4 pl-6 pt-2">CHAT WITH AI</h2>
                                     <div className="whitespace-pre-wrap text-sm leading-relaxed">
                                         <ChatAi problem={problem}/>
                                     </div>

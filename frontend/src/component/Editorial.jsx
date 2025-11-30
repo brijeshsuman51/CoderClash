@@ -41,7 +41,7 @@ function Editorial({secureUrl,thumbnailUrl,duration}) {
 
     return(
         <div
-        className="relative w-full max-w-2xl mx-auto rounded-xl overflow-hidden shadow-lg"
+        className="relative w-full max-w-2xl mx-auto rounded-xl overflow-hidden shadow-lg "
         onMouseEnter={()=>setHovering(true)}
         onMouseLeave={()=>setHovering(false)}
         >
@@ -54,13 +54,13 @@ function Editorial({secureUrl,thumbnailUrl,duration}) {
             />
 
             <div
-            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity ${
+            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-opacity  ${
             hovering || !Playing ? 'opacity-100' : 'opacity-0'
             }`}
             >
                 <button
                 onClick={PlayPause}
-                className="btn btn-circle btn-primary mr-3"
+                className="btn btn-circle btn-primary mr-3 "
                 aria-label={Playing ? "Pause" : "Play"}
                 >
                     {Playing  ? (
