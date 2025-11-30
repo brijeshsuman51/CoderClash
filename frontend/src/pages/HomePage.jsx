@@ -160,6 +160,7 @@ function HomePage() {
                     >
                         <option value="all">All Tags</option>
                         <option value="array">Array</option>
+                        <option value="string">String</option>
                         <option value="linkedList">Linked List</option>
                         <option value="graph">Graph</option>
                         <option value="dp">Dp</option>
