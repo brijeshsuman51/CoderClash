@@ -81,7 +81,7 @@ function ChatAi({ problem }) {
                     <button
                         type="submit"
                         className="btn btn-ghost ml-2"
-                        disabled={!!errors.message} // Fixed boolean conversion
+                        disabled={!!errors.message} 
                     >
                         <Send size={20} />
                     </button>
