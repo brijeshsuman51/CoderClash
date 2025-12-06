@@ -29,7 +29,7 @@ const Register = async (req,res)=>{
      res.cookie('token',token,{maxAge: 60*60*1000});
      res.status(201).json({
         user:reply,
-        message:"Loggin Successfully"
+        message:"Login Successfully"
     })
     }
     catch(err){
@@ -72,11 +72,12 @@ const Login = async (req,res)=>{
             message:"Login Successfully"
         })
     } catch (error) {
-        res.status(400).send("Err2or: " + error.message)
+        res.status(400).send("Error: " + error.message)
     }
 }
 
 // Logout the User
+
 const Logout = async (req,res) => {
     try {
         const {token} = req.cookies;
@@ -88,7 +89,7 @@ const Logout = async (req,res) => {
         res.cookie('token',null,{expires: new Date(Date.now())})
         res.send("User Logout Successfully")
     } catch (err) {
-        res.send('Err3or:'+err)
+        res.send('Error:'+err)
     }
 }
 
@@ -109,7 +110,7 @@ const Logout = async (req,res) => {
 
 
 //     } catch (error) {
-//         res.send('Err4or:'+error)
+//         res.send('Error:'+error)
 //     }
 
 // }
@@ -123,7 +124,7 @@ const deleteProfile = async (req,res) => {
 
         res.send("Deleted Profile Successfully")
     } catch (error) {
-        res.send('Erro5r:'+error)
+        res.send('Error:'+error)
     }
 }
 

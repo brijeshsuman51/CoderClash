@@ -162,7 +162,7 @@ const runCode = async (req,res) => {
             memory
         })
     } catch (error) {
-        res.send("Error2:",error.message)
+        res.send("Error:",error.message)
     }
 }
 

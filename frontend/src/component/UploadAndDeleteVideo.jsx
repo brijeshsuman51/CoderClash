@@ -2,9 +2,6 @@ import { useEffect, useState } from "react"
 import axiosClient from "../utils/axiosClient"
 import { NavLink } from "react-router"
 
-
-
-
 const DeleteVideo = ()=>{
     const [problems,setProblems] = useState([])
     const [loading,setLoading] = useState(true)

@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react"
 import axiosClient from "../utils/axiosClient"
 
-
-
-
 const DeleteProblem = ()=>{
     const [problems,setProblems] = useState([])
     const [loading,setLoading] = useState(true)

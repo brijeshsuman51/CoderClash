@@ -46,7 +46,7 @@ const updateProblem = async (req,res) => {
         res.send(newProblem)
         
     } catch (error) {
-        res.send("Error3423:"+error.message)
+        res.send("Error:"+error.message)
     }
     
 }

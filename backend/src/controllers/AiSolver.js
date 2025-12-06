@@ -86,7 +86,7 @@ Remember: Your goal is to help users learn and understand DSA concepts through t
             res.json({
                 message:response.text
             })
-            console.log(response.text)
+            // console.log(response.text)
         }
         main()
     } catch (err) {

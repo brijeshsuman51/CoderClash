@@ -142,8 +142,6 @@ function CreateProblem(){
                         </select>
                         </div>
 
-{/* ['array','linkedList','graph'] */}
-
                         <div className="form-control w-1/2">
                         <label className="label">
                         <span className="label-text">Tags</span>

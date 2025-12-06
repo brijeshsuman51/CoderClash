@@ -14,7 +14,6 @@ problemRouter.get("/problemById/:id",getProblemByUsers)
 problemRouter.get("/getAllProblem",getAllProblem)
 // Solved problems require authentication
 problemRouter.get("/problemSolvedByUser",userMiddleware,solvedAllProblemByUser)
-
 problemRouter.get("/totalProblemSubmitted/:id",userMiddleware,submittedProblem)
 
 
