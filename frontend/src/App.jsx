@@ -18,11 +18,25 @@ import EditProfile from "./pages/EditProfile";
 
 function App(){
     const dispatch = useDispatch()
-    const {isAuthenticated,user,loading} = useSelector((state)=>state.auth)
+    const {isAuthenticated,user,loading,isGuestMode} = useSelector((state)=>state.auth)
 
     useEffect(()=>{
         dispatch(checkAuth())
+        // restore guest mode from localStorage
+        try {
+            const stored = localStorage.getItem('guestMode');
+            if (stored === 'true') {
+                dispatch({ type: 'auth/setGuestMode', payload: true });
+            }
+        } catch {};
     },[dispatch])
+
+    // persist guest mode changes
+    useEffect(() => {
+        try {
+            localStorage.setItem('guestMode', isGuestMode ? 'true' : 'false');
+        } catch {};
+    }, [isGuestMode]);
 
     if(loading){
         return <div className="min-h-screen flex items-center justify-center">
@@ -36,13 +50,13 @@ function App(){
             <Route path="/" element={<Homepage></Homepage>}></Route>
             <Route path="/login" element={isAuthenticated ? <Navigate to='/'/> : <Login></Login> }></Route>
             <Route path="/signup" element={isAuthenticated ? <Navigate to='/'/> : <Signup></Signup> }></Route>
-            <Route path="/admin" element={isAuthenticated && user?.role==='admin' ? <AdminPanel/> : <Navigate to="/" /> }></Route>
-            <Route path="/admin/create" element={isAuthenticated && user?.role === 'admin' ? <CreateProblem /> : <Navigate to="/" />} />
-            <Route path="/admin/update" element={isAuthenticated && user?.role === 'admin' ? <UpdateProblem /> : <Navigate to="/" />} />
-            <Route path="/admin/update/:problemId" element={isAuthenticated && user?.role === 'admin' ? <UpdateProblem /> : <Navigate to="/" />} />
-            <Route path="/admin/delete" element={isAuthenticated && user?.role === 'admin' ? <DeleteProblem /> : <Navigate to="/" />} />
-            <Route path="/admin/video" element={isAuthenticated && user?.role === 'admin' ? <DeleteVideo /> : <Navigate to="/" />} />
-            <Route path="/admin/upload/:problemId" element={isAuthenticated && user?.role === 'admin' ? <CloudinaryUploadVideo /> : <Navigate to="/" />} />
+            <Route path="/admin" element={(isAuthenticated && user?.role==='admin') || isGuestMode ? <AdminPanel/> : <Navigate to="/" /> }></Route>
+            <Route path="/admin/create" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <CreateProblem /> : <Navigate to="/" />} />
+            <Route path="/admin/update" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <UpdateProblem /> : <Navigate to="/" />} />
+            <Route path="/admin/update/:problemId" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <UpdateProblem /> : <Navigate to="/" />} />
+            <Route path="/admin/delete" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <DeleteProblem /> : <Navigate to="/" />} />
+            <Route path="/admin/video" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <DeleteVideo /> : <Navigate to="/" />} />
+            <Route path="/admin/upload/:problemId" element={(isAuthenticated && user?.role === 'admin') || isGuestMode ? <CloudinaryUploadVideo /> : <Navigate to="/" />} />
             <Route path="/problem/:problemId" element={<ProblemPage/>}></Route>
             <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}></Route>
             <Route path="/profile/edit" element={isAuthenticated ? <EditProfile /> : <Navigate to="/login" />}></Route>

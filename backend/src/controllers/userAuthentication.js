@@ -33,7 +33,7 @@ const Register = async (req,res)=>{
     })
     }
     catch(err){
-        res.status(400).send("Error: "+err);
+        res.status(400).send("Error: "+err.message);
     }
 }
 
@@ -89,7 +89,7 @@ const Logout = async (req,res) => {
         res.cookie('token',null,{expires: new Date(Date.now())})
         res.send("User Logout Successfully")
     } catch (err) {
-        res.send('Error:'+err)
+        res.send('Error:'+err.message)
     }
 }
 

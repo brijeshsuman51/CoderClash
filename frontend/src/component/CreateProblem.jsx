@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { languages } from "monaco-editor"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
+import { useSelector } from "react-redux"
 import { z } from 'zod'
 import axiosClient from "../utils/axiosClient"
 
@@ -41,6 +42,7 @@ const problemSchema = z.object({
 
 function CreateProblem(){
     const navigate = useNavigate()
+    const { isGuestMode } = useSelector((state) => state.auth)
     const {
         register,
         control,
@@ -96,6 +98,15 @@ function CreateProblem(){
     return(
         <div className="container max-auto p-6">
             <h1 className="text-3xl font-bold mb-6 ">Create New Problem</h1>
+
+            {isGuestMode && (
+                <div className="alert alert-warning mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4v2m0 4v2M7.08 6.06A9 9 0 1 0 21 12a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5 6 6 0 1 1-6-6 .5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5A9 9 0 0 0 7.08 6.06z" />
+                    </svg>
+                    <span>You are in Guest Mode. You can view admin features but cannot create problems. Please log in to create problems.</span>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="card bg-base-100 shadow-lg p-6">
@@ -289,8 +300,12 @@ function CreateProblem(){
                     </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary w-full" >
-                    Create Problem
+                <button 
+                    type="submit" 
+                    className="btn btn-primary w-full" 
+                    disabled={isGuestMode}
+                >
+                    {isGuestMode ? 'Disabled in Guest Mode' : 'Create Problem'}
                 </button>
             </form>
         </div>

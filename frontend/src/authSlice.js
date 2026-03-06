@@ -91,10 +91,17 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     isAuthenticated: false,
+    isGuestMode: false,
     loading: false,
     error: null
   },
   reducers: {
+    toggleGuestMode: (state) => {
+      state.isGuestMode = !state.isGuestMode;
+    },
+    setGuestMode: (state, action) => {
+      state.isGuestMode = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -124,6 +131,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload;
+        state.isGuestMode = false; // disable guest mode when user logs in
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -159,6 +167,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;
+        state.isGuestMode = false; // disable guest mode when logging out
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
@@ -169,4 +178,5 @@ const authSlice = createSlice({
   }
 });
 
+export const { toggleGuestMode, setGuestMode } = authSlice.actions;
 export default authSlice.reducer;

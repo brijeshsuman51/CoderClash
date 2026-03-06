@@ -44,7 +44,7 @@ function UpdateProblem() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { problemId } = useParams();
-    const { user } = useSelector((state) => state.auth);
+    const { user, isGuestMode } = useSelector((state) => state.auth);
     const [problems, setProblems] = useState([]);
     const [selectedProblem, setSelectedProblem] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -585,17 +585,25 @@ function UpdateProblem() {
                     </div>
                 </div>
 
+                {isGuestMode && (
+                    <div className="alert alert-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4v2m0 4v2M7.08 6.06A9 9 0 1 0 21 12a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5 6 6 0 1 1-6-6 .5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5A9 9 0 0 0 7.08 6.06z" />
+                        </svg>
+                        <span>Guest mode enabled. Editing is disabled.</span>
+                    </div>
+                )}
                 <button 
                     type="submit" 
                     className="btn btn-primary w-full"
-                    disabled={submitting}
+                    disabled={submitting || isGuestMode}
                 >
                     {submitting ? (
                         <>
                             <span className="loading loading-spinner"></span>
                             Updating...
                         </>
-                    ) : "Update Problem"}
+                    ) : isGuestMode ? "Disabled in Guest Mode" : "Update Problem"}
                 </button>
             </form>
         </div>

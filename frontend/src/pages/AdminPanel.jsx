@@ -1,9 +1,11 @@
 import React,{ useState } from 'react';
 import {Plus,Edit, Trash2,Video} from 'lucide-react'
 import { NavLink } from 'react-router';
+import { useSelector } from 'react-redux';
 
 function AdminPanel(){
     const [selectedOption,setSelectedOption] = useState(null)
+    const { isGuestMode } = useSelector(state=>state.auth);
 
     const adminOptions = [
         {
@@ -52,6 +54,14 @@ function AdminPanel(){
                     <p>
                         Manage coding problems on your platform
                     </p>
+                    {isGuestMode && (
+                        <div className="alert alert-warning mt-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4v2m0 4v2M7.08 6.06A9 9 0 1 0 21 12a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5 6 6 0 1 1-6-6 .5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5A9 9 0 0 0 7.08 6.06z" />
+                            </svg>
+                            <span>Guest Mode: you can view options but cannot perform admin actions.</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl max-auto'>
@@ -76,7 +86,6 @@ function AdminPanel(){
                                 <p className='text-base-content/70 mb-6'>
                                     {option.description}
                                 </p>
-
                                 <div className='card-actions'>
                                     <div className='card-actions'>
                                         <NavLink
@@ -87,6 +96,22 @@ function AdminPanel(){
                                         </NavLink>
                                     </div>
                                 </div>
+                                {/* <div className='card-actions'>
+                                    <div className='card-actions'> */}
+                                        {/* {isGuestMode ? (
+                                            <button className={`btn ${option.color} btn-wide btn-disabled`} disabled>
+                                                {option.title}
+                                            </button>
+                                        ) : (
+                                            <NavLink
+                                            to={option.route}
+                                            className={`btn ${option.color} btn-wide`}
+                                            >
+                                                {option.title}
+                                            </NavLink>
+                                        )} */}
+                                    {/* </div>
+                                </div> */}
                             </div>
 
                             </div>

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import axiosClient from "../utils/axiosClient"
 
 const DeleteProblem = ()=>{
     const [problems,setProblems] = useState([])
     const [loading,setLoading] = useState(true)
     const [error,setError] = useState(null)
+    const isGuestMode = useSelector(state=>state.auth.isGuestMode)
 
     useEffect(()=>{
         fetchProblems()
@@ -56,6 +58,21 @@ const DeleteProblem = ()=>{
     );
   }
 
+    if(isGuestMode){
+        return (
+            <div className="container mx-auto p-4">
+                <div className="alert alert-warning shadow-lg mb-6">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4v2m0 4v2M7.08 6.06A9 9 0 1 0 21 12a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5 6 6 0 1 1-6-6 .5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5A9 9 0 0 0 7.08 6.06z" />
+                        </svg>
+                        <span>Guest Mode active. Deletion is disabled.</span>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
   return(
     <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
@@ -97,8 +114,9 @@ const DeleteProblem = ()=>{
                                  <button
                                  onClick={()=>handleDelete(problem._id)}
                                  className="btn btn-sm btn-error"
+                                 disabled={isGuestMode}
                                  >
-                                    Delete
+                                    {isGuestMode ? 'Disabled' : 'Delete'}
                                  </button>
                                 </div>
                             </td>
